@@ -4,40 +4,77 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0001_initial'),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Permission',
+            name="Permission",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Название разрешения (кодовое)')),
-                ('description', models.TextField(blank=True, verbose_name='Описание')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=100,
+                        unique=True,
+                        verbose_name="Название разрешения (кодовое)",
+                    ),
+                ),
+                ("description", models.TextField(blank=True, verbose_name="Описание")),
             ],
             options={
-                'verbose_name': 'Разрешение',
-                'verbose_name_plural': 'Разрешения',
+                "verbose_name": "Разрешение",
+                "verbose_name_plural": "Разрешения",
             },
         ),
         migrations.CreateModel(
-            name='Role',
+            name="Role",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Название роли')),
-                ('description', models.TextField(blank=True, verbose_name='Описание')),
-                ('permissions', models.ManyToManyField(blank=True, related_name='roles', to='users.permission', verbose_name='Разрешения')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=100, unique=True, verbose_name="Название роли"
+                    ),
+                ),
+                ("description", models.TextField(blank=True, verbose_name="Описание")),
+                (
+                    "permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="roles",
+                        to="users.permission",
+                        verbose_name="Разрешения",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Роль',
-                'verbose_name_plural': 'Роли',
+                "verbose_name": "Роль",
+                "verbose_name_plural": "Роли",
             },
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='roles',
-            field=models.ManyToManyField(blank=True, related_name='users', to='users.role', verbose_name='Роли'),
+            model_name="customuser",
+            name="roles",
+            field=models.ManyToManyField(
+                blank=True, related_name="users", to="users.role", verbose_name="Роли"
+            ),
         ),
     ]

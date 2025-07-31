@@ -1,15 +1,21 @@
-from rest_framework import generics, views
-from rest_framework import viewsets, status
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
+from rest_framework import generics, status, views, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from apps.users.permissions import HasPermission
-from .serializers import UserRegistrationSerializer, LoginSerializer, UserProfileSerializer, PermissionSerializer, \
-    RoleSerializer
-from .models import CustomUser, Role, Permission
+
+from .models import CustomUser, Permission, Role
+from .serializers import (
+    LoginSerializer,
+    PermissionSerializer,
+    RoleSerializer,
+    UserProfileSerializer,
+    UserRegistrationSerializer,
+)
 
 
 class UserRegistrationView(generics.CreateAPIView):
@@ -17,6 +23,7 @@ class UserRegistrationView(generics.CreateAPIView):
     View для регистрации пользователей.
     Доступно всем (AllowAny).
     """
+
     queryset = CustomUser.objects.all()
     permission_classes = [AllowAny]
     serializer_class = UserRegistrationSerializer
@@ -27,20 +34,23 @@ class LoginView(generics.GenericAPIView):
     View для входа в систему.
     Возвращает access и refresh токены.
     """
+
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data["user"]
 
         refresh = RefreshToken.for_user(user)
 
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        })
+        return Response(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+        )
 
 
 class LogoutView(views.APIView):
@@ -49,6 +59,7 @@ class LogoutView(views.APIView):
     На практике, фронтенд просто удаляет токены.
     Этот эндпоинт может использоваться для добавления refresh токена в черный список.
     """
+
     permission_classes = [IsAuthenticated]
 
 
@@ -60,9 +71,12 @@ class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
     - PUT/PATCH: обновить данные профиля.
     - DELETE: "мягко" удалить свой аккаунт.
     """
+
     queryset = CustomUser.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated]  # <-- Ключевой момент! Доступ только по токену.
+    permission_classes = [
+        IsAuthenticated
+    ]  # <-- Ключевой момент! Доступ только по токену.
 
     def get_object(self):
         """
@@ -87,10 +101,11 @@ class PermissionViewSet(viewsets.ModelViewSet):
     API эндпоинт для управления Разрешениями.
     Доступно только администраторам с правом 'manage_permissions'.
     """
+
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
     permission_classes = [IsAuthenticated, HasPermission]
-    required_permissions = ['manage_permissions']
+    required_permissions = ["manage_permissions"]
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -98,10 +113,11 @@ class RoleViewSet(viewsets.ModelViewSet):
     API эндпоинт для управления Ролями.
     Доступно только администраторам с правом 'manage_roles'.
     """
+
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated, HasPermission]
-    required_permissions = ['manage_roles']
+    required_permissions = ["manage_roles"]
 
 
 class UserRoleAssignmentView(APIView):
@@ -109,8 +125,9 @@ class UserRoleAssignmentView(APIView):
     View для назначения и снятия ролей с пользователей.
     Доступно только администраторам с правом 'assign_roles'.
     """
+
     permission_classes = [IsAuthenticated, HasPermission]
-    required_permissions = ['assign_roles']
+    required_permissions = ["assign_roles"]
 
     def _get_user_and_role(self, request_data):
         """
@@ -118,8 +135,8 @@ class UserRoleAssignmentView(APIView):
         Избегает дублирования кода.
         """
         _ = self.permission_classes
-        user_id = request_data.get('user_id')
-        role_id = request_data.get('role_id')
+        user_id = request_data.get("user_id")
+        role_id = request_data.get("role_id")
 
         if not user_id or not role_id:
             # ИСПОЛЬЗУЕМ ИСПРАВЛЕННЫЙ ВАРИАНТ
@@ -145,8 +162,11 @@ class UserRoleAssignmentView(APIView):
         user.roles.add(role)
 
         return Response(
-            {"message": f"Роль '{role.name}' успешно назначена пользователю '{user.email}'"},
-            status=status.HTTP_200_OK
+            {
+                "message": f"Роль '{role.name}' успешно"
+                f" назначена пользователю '{user.email}'"
+            },
+            status=status.HTTP_200_OK,
         )
 
     def delete(self, request, *args, **kwargs):
@@ -162,6 +182,9 @@ class UserRoleAssignmentView(APIView):
         user.roles.remove(role)
 
         return Response(
-            {"message": f"Роль '{role.name}' успешно снята с пользователя '{user.email}'"},
-            status=status.HTTP_200_OK
+            {
+                "message": f"Роль '{role.name}' успешно снята"
+                f" с пользователя '{user.email}'"
+            },
+            status=status.HTTP_200_OK,
         )
