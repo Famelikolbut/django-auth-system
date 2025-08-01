@@ -1,20 +1,22 @@
-# Список репозиториев
 repos:
-  # Репозиторий с базовыми хуками
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
-    hooks:
-      - id: check-yaml # Проверяет синтаксис YAML файлов
-      - id: check-json # Проверяет синтаксис JSON файлов
-      - id: end-of-file-fixer # Убеждается, что файл заканчивается пустой строкой
-      - id: trailing-whitespace # Удаляет лишние пробелы в конце строк
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+    - id: check-yaml
+    - id: check-json
+    # - id: end-of-file-fixer # <-- Закомментировали или удалили
+    - id: trailing-whitespace
+    - id: check-added-large-files # Полезный хук, чтобы случайно не добавить большие файлы
+    - id: check-case-conflict # Проверяет конфликты имен файлов в Windows/macOS
+    - id: check-executables-have-shebangs # Проверяет исполняемые файлы
+    - id: check-merge-conflict # Предотвращает коммит с маркерами конфликтов
+    - id: mixed-line-ending # Убеждается, что окончания строк одинаковые
+    - id: check-symlinks # Проверяет символические ссылки
+    - id: detect-private-key # Предотвращает коммит приватных ключей
 
-  # Репозиторий с Ruff - нашим главным инструментом
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.9
-    hooks:
-      # Запускает линтер (проверка на ошибки и стиль)
-      - id: ruff
-        args: [--fix] # Автоматически исправлять то, что можно
-      # Запускает форматтер (аналог Black)
-      - id: ruff-format
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.12.7
+  hooks:
+    - id: ruff
+      args: [--fix]
+    - id: ruff-format
