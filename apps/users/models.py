@@ -60,7 +60,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     is_deleted = models.BooleanField("Удален", default=False)
 
-    # НОВОЕ ПОЛЕ ДЛЯ СВЯЗИ С РОЛЯМИ
     roles = models.ManyToManyField(
         "Role", verbose_name="Роли", blank=True, related_name="users"
     )

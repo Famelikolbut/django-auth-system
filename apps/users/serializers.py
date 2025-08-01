@@ -43,7 +43,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         Создаем нового пользователя.
         """
-        validated_data.pop("password2")  # Удаляем ненужное поле
+        validated_data.pop("password2")
         user = CustomUser.objects.create_user(
             email=validated_data["email"],
             password=validated_data["password"],
@@ -69,8 +69,6 @@ class LoginSerializer(serializers.Serializer):
         password = data.get("password")
 
         if email and password:
-            # Мы используем наш CustomUserManager, который вернет CustomUser
-            # или None. Это более явный способ.
             user = authenticate(
                 request=self.context.get("request"), email=email, password=password
             )
@@ -79,11 +77,7 @@ class LoginSerializer(serializers.Serializer):
                 msg = "Невозможно войти с предоставленными учетными данными."
                 raise serializers.ValidationError(msg, code="authorization")
 
-            # Добавляем явную проверку, является ли полученный user
-            # экземпляром нашего CustomUser
             if not isinstance(user, CustomUser):
-                # Эта ситуация не должна произойти в нашем проекте,
-                # но это "защита от дурака"
                 msg = "Некорректный тип пользователя."
                 raise serializers.ValidationError(msg, code="authorization")
 
@@ -108,7 +102,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ("email", "first_name", "last_name", "patronymic")
-        # Email можно только читать, менять его через этот эндпоинт нельзя
+
         read_only_fields = ("email",)
 
 
@@ -123,13 +117,8 @@ class PermissionSerializer(serializers.ModelSerializer):
 class RoleSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Ролей."""
 
-    # Используем вложенный сериализатор,
-    # чтобы видеть полную информацию
-    # о разрешениях, а не просто их ID.
     permissions = PermissionSerializer(many=True, read_only=True)
-    # Это поле будет использоваться для назначения
-    # разрешений по их ID
-    # при создании/обновлении роли.
+
     permission_ids = serializers.ListField(
         child=serializers.IntegerField(), write_only=True, required=False
     )

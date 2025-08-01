@@ -1,4 +1,3 @@
-# ИМПОРТИРУЕМ ФУНКЦИЮ ДЛЯ ХЭШИРОВАНИЯ ПАРОЛЕЙ
 from django.contrib.auth.hashers import make_password
 from django.db import migrations
 
@@ -11,7 +10,6 @@ def populate_initial_data(apps, schema_editor):
     role_model = apps.get_model("users", "Role")
     user_model = apps.get_model("users", "CustomUser")
 
-    # --- 1. Создание Разрешений (Permissions) ---
     perm_view_own_docs, _ = permission_model.objects.get_or_create(
         name="view_own_documents",
         defaults={
@@ -34,7 +32,6 @@ def populate_initial_data(apps, schema_editor):
         defaults={"description": "Разрешает назначать роли пользователям."},
     )
 
-    # --- 2. Создание Ролей (Roles) ---
     admin_role, created = role_model.objects.get_or_create(name="Администратор")
     if created:
         all_permissions = permission_model.objects.all()
@@ -44,13 +41,11 @@ def populate_initial_data(apps, schema_editor):
     if created:
         user_role.permissions.set([perm_view_own_docs])
 
-    # --- 3. Создание Пользователей (Users) - ФИНАЛЬНЫЙ РАБОЧИЙ СПОСОБ ---
     if not user_model.objects.filter(email="admin@example.com").exists():
-        # Хэшируем пароль вручную
         hashed_password_admin = make_password("adminpassword123")
         admin_user = user_model.objects.create(
             email="admin@example.com",
-            password=hashed_password_admin,  # Сохраняем уже хэш
+            password=hashed_password_admin,
             is_staff=True,
             is_superuser=True,
             is_active=True,
@@ -58,11 +53,10 @@ def populate_initial_data(apps, schema_editor):
         admin_user.roles.add(admin_role)
 
     if not user_model.objects.filter(email="user@example.com").exists():
-        # Хэшируем пароль вручную
         hashed_password_user = make_password("userpassword123")
         regular_user = user_model.objects.create(
             email="user@example.com",
-            password=hashed_password_user,  # Сохраняем уже хэш
+            password=hashed_password_user,
             first_name="Тестовый",
             last_name="Пользователь",
             is_staff=False,

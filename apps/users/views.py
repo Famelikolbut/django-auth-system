@@ -56,8 +56,6 @@ class LoginView(generics.GenericAPIView):
 class LogoutView(views.APIView):
     """
     View для выхода из системы.
-    На практике, фронтенд просто удаляет токены.
-    Этот эндпоинт может использоваться для добавления refresh токена в черный список.
     """
 
     permission_classes = [IsAuthenticated]
@@ -74,9 +72,7 @@ class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = CustomUser.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [
-        IsAuthenticated
-    ]  # <-- Ключевой момент! Доступ только по токену.
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         """
@@ -90,7 +86,6 @@ class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
         Переопределяем метод удаления для "мягкого" удаления.
         """
         # Пользователь инициирует удаление, происходит logout,
-        # пользователь больше не может залогиниться.
         instance.is_deleted = True
         instance.is_active = False
         instance.save()
@@ -132,14 +127,12 @@ class UserRoleAssignmentView(APIView):
     def _get_user_and_role(self, request_data):
         """
         Приватный метод для извлечения пользователя и роли из данных запроса.
-        Избегает дублирования кода.
         """
         _ = self.permission_classes
         user_id = request_data.get("user_id")
         role_id = request_data.get("role_id")
 
         if not user_id or not role_id:
-            # ИСПОЛЬЗУЕМ ИСПРАВЛЕННЫЙ ВАРИАНТ
             raise ValidationError(
                 {"error": "Необходимо предоставить user_id и role_id"}
             )
@@ -155,7 +148,7 @@ class UserRoleAssignmentView(APIView):
 
         try:
             user, role = self._get_user_and_role(request.data)
-        # И ЗДЕСЬ ТОЖЕ
+
         except ValidationError as e:
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
