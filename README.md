@@ -16,7 +16,7 @@
 
 ### 1. Клонирование репозитория
 ```bash
-git clone <url-вашего-репозитория-на-github>
+git clone https://github.com/Famelikolbut/django-auth-system.git
 ```
 ### 2. Создание файла окружения
 Проект использует `.env` файл для хранения секретов и настроек.
