@@ -1,7 +1,21 @@
-.idea
 # Environments
 .env
 .venv
 env/
 venv/
 ENV/
+
+# Кэш Python
+__pycache__/
+*.pyc
+
+# База данных SQLite
+db.sqlite3
+
+# Файлы IDE
+.idea/
+.vscode/
+
+# Статические файлы и медиа
+/static/
+/media/
