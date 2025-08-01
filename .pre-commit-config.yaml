@@ -4,7 +4,6 @@ repos:
   hooks:
     - id: check-yaml
     - id: check-json
-    # - id: end-of-file-fixer # <-- Закомментировали или удалили
     - id: trailing-whitespace
     - id: check-added-large-files # Полезный хук, чтобы случайно не добавить большие файлы
     - id: check-case-conflict # Проверяет конфликты имен файлов в Windows/macOS
